@@ -9,8 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^10.0",
+        "php": "^8.2",
         "nesbot/carbon": "^2.0",
         "doctrine/dbal": "^3.0",
         "maatwebsite/excel": "^3.1"
@@ -27,7 +26,7 @@
     "minimum-stability": "stable",
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
-        "laravel/framework": "^10.0",
+        "laravel/framework": "^11.0",
         "mockery/mockery": "^1.4.4",
         "orchestra/testbench": "^8.14",
         "kub-at/php-simple-html-dom-parser": "^1.9",
