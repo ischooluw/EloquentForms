@@ -2,7 +2,7 @@ on: push
 name: tests
 jobs:
   linux_tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
 
     services:
@@ -11,7 +11,7 @@ jobs:
         ports:
           - 11211:11211
       mysql:
-        image: mysql:5.7
+        image: mysql:8.4
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: forge
@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: ['8.1', '8.2']
+        php: ['8.2', '8.3']
         stability: [prefer-lowest, prefer-stable]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
@@ -50,13 +50,13 @@ jobs:
           tools: composer:v2
           coverage: pcov
 
-      - name: Set Minimum PHP 8.1 Versions
-        uses: nick-fields/retry@v2
+      - name: Set Minimum PHP 8.2 Versions
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
           max_attempts: 5
-          command: composer require guzzlehttp/guzzle:^7.2 --no-interaction --no-update
-        if: matrix.php >= 8.1
+          command: composer require guzzlehttp/guzzle:^7.9 --no-interaction --no-update
+        if: matrix.php >= 8.2
 
       # - name: Set Minimum PHP 8.1 Versions
       #   uses: nick-fields/retry@v2
@@ -96,7 +96,7 @@ jobs:
           verbose: true
 
       - name: Store artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: logs
           path: |
