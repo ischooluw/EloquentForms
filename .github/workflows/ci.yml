@@ -73,8 +73,8 @@ jobs:
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
-      - name: remove recursive symlink
-        run: rm vendor/orchesta/testbench-core/laravel/vendor
+      - name: Remove recursive symlink if it exists
+        run: rm -f vendor/orchestra/testbench-core/laravel/vendor
 
       - name: Execute tests
         run: vendor/bin/phpunit --coverage-clover './clover.xml'
