@@ -4,6 +4,8 @@ jobs:
   linux_tests:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     services:
       memcached:
@@ -87,10 +89,10 @@ jobs:
           DB_DATABASE: forge
 
       - name: Upload coverage to Codecov
-        if: ${{ matrix.stability == 'prefer-stable' && secrets.CODECOV_TOKEN != '' }}
+        if: ${{ matrix.stability == 'prefer-stable' && env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
           directory: .
           fail_ci_if_error: true
           files: ./clover.xml
@@ -99,7 +101,7 @@ jobs:
           verbose: true
 
       - name: Skip Codecov upload (token not provided)
-        if: ${{ matrix.stability == 'prefer-stable' && secrets.CODECOV_TOKEN == '' }}
+        if: ${{ matrix.stability == 'prefer-stable' && env.CODECOV_TOKEN == '' }}
         run: echo "Codecov upload skipped because CODECOV_TOKEN secret is not configured."
 
       - name: Store artifacts
