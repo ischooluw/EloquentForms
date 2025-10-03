@@ -1,7 +1,7 @@
 ![Build Status](https://github.com/nickwest/EloquentForms/actions/workflows/ci.yml/badge.svg) [![Latest Stable Version](https://poser.pugx.org/nickwest/eloquent-forms/v/stable)](https://packagist.org/packages/nickwest/eloquent-forms) [![License](https://poser.pugx.org/nickwest/eloquent-forms/license)](https://packagist.org/packages/nickwest/eloquent-forms) [![StyleCI](https://github.styleci.io/repos/123993557/shield?branch=main)](https://github.styleci.io/repos/123993557?branch=main) [![Maintainability](https://api.codeclimate.com/v1/badges/f986a765708538da7e5e/maintainability)](https://codeclimate.com/github/nickwest/EloquentForms/maintainability) [![codecov](https://codecov.io/gh/nickwest/EloquentForms/branch/master/graph/badge.svg)](https://codecov.io/gh/nickwest/EloquentForms)
 
 
-EloquentForms v11.0.x
+EloquentForms v12.0.x
 =================
 
 EloquentForms was created by and is maintained by [Nicky West](https://github.com/nickwest). It was created to minimize the time and effort required to create simple HTML forms generated from Eloquent Models to support CRUD functionality.
@@ -12,11 +12,11 @@ EloquentForms can be easily themed to support various front-end css/js framework
 
 ## Installation
 
-EloquentForms requires PHP 8.2^. This particular version supports Laravel 11.x To install on earlier versions of laravel Laravel use the X.Y.z release of EloquentForms where X.Y or X.0 (Laravel's versioning scheme changed) matches the versions of Laravel you're using.
+EloquentForms requires PHP 8.2^. This particular version supports Laravel 12.x To install on earlier versions of laravel Laravel use the X.Y.z release of EloquentForms where X.Y or X.0 (Laravel's versioning scheme changed) matches the versions of Laravel you're using.
 
 To get the latest version you need only require the package via Composer.
 ```
-Composer require nickwest/EloquentForms
+composer require ischooluw/eloquent-forms
 ```
 EloquentForms supports [Laravel Auto-Discovery](https://medium.com/@taylorotwell/package-auto-discovery-in-laravel-5-5-ea9e3ab20518). It shouldn't be necessary with Laravel 5.5^, but to manually add the package the following providers should be added in your config/app.php:
 ```
