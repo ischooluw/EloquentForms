@@ -37,6 +37,10 @@ class TableTest extends TestCase
         $app['router']->get('sample/data', ['as' => 'sample', 'uses' => function () {
             return 'This is a sample route';
         }]);
+
+        $app['router']->get('sample/{id}/edit', ['as' => 'sample.edit', 'uses' => function () {
+            return 'This is a sample route with a parameter';
+        }]);
     }
 
 
@@ -197,6 +201,28 @@ class TableTest extends TestCase
         $this->Table->addLinkingPatternByRoute('name', 'sample');
 
         $this->assertEquals(['name' => '<a href="/sample/data">{name}</a>'], $this->Table->getFieldReplacements());
+    }
+
+    public function test_table_addLinkingPatternByRoute_applies_replacement_map_and_array_query_string()
+    {
+        $this->Table->addLinkingPatternByRoute('name', 'sample.edit', ['{id}' => '{email}'], ['tab' => 'info', 'sort' => 'asc']);
+
+        $this->assertEquals(['name' => '<a href="/sample/{email}/edit?tab=info&sort=asc">{name}</a>'], $this->Table->getFieldReplacements());
+    }
+
+    public function test_table_addLinkingPatternByRoute_applies_string_query_string()
+    {
+        $this->Table->addLinkingPatternByRoute('name', 'sample', [], 'tab=info');
+
+        $this->assertEquals(['name' => '<a href="/sample/data?tab=info">{name}</a>'], $this->Table->getFieldReplacements());
+    }
+
+    public function test_table_addLinkingPatternByRoute_wraps_an_existing_field_replacement()
+    {
+        $this->Table->addFieldReplacement('name', '<strong>{name}</strong>');
+        $this->Table->addLinkingPatternByRoute('name', 'sample');
+
+        $this->assertEquals(['name' => '<a href="/sample/data"><strong>{name}</strong></a>'], $this->Table->getFieldReplacements());
     }
 
     public function test_table_addLinkingPatternByRoute_throws_exception_on_invalid_route()

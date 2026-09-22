@@ -51,7 +51,8 @@ trait FormTrait
      */
     public static function bootFormTrait()
     {
-        static::observe(new FormObserver);
+        // observe() instantiates the model, which Laravel 13 disallows mid-boot
+        static::whenBooted(fn () => static::observe(new FormObserver));
     }
 
     /**

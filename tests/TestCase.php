@@ -223,8 +223,11 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function expectedDBStructure($is_mySql = false)
     {
         if($is_mySql){
+            // MySQL 8.0.19+ no longer reports integer display widths, e.g. int(11) is just int
+            $has_int_widths = $this->mysqlReportsIntegerDisplayWidths();
+
             return [
-                'id' => $this->columnArray('id', 'int', null, 10),
+                'id' => $this->columnArray('id', 'int', null, $has_int_widths ? 10 : null),
                 'created_at' => $this->columnArray('created_at', 'timestamp'),
                 'updated_at' => $this->columnArray('updated_at', 'timestamp'),
                 'first_name' => $this->columnArray('first_name', 'varchar', null, 255),
@@ -232,7 +235,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
                 'email' => $this->columnArray('email', 'varchar', null, 255),
                 'password' => $this->columnArray('password', 'varchar', null, 255),
                 'file_name' => $this->columnArray('file_name', 'varchar', null, 255),
-                'favorite_number' => $this->columnArray('favorite_number', 'int', null, '11'),
+                'favorite_number' => $this->columnArray('favorite_number', 'int', null, $has_int_widths ? '11' : null),
                 'is_hidden' => $this->columnArray('is_hidden', 'tinyint', null, 1),
                 'favorite_season' => $this->columnArray('favorite_season', 'enum', null, null, ['' => '-- Select One --', 'Winter' => 'Winter', 'Spring' => 'Spring','Summer' => 'Summer','Autumn' => 'Autumn']),
                 'beverage' => $this->columnArray('beverage', 'enum', null, null, ['' => '-- Select One --', 'Beer' => 'Beer', 'Wine' => 'Wine', 'Water' => 'Water']),
@@ -243,7 +246,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
                 'favorite_date' => $this->columnArray('favorite_date', 'date'),
                 'favorite_days' => $this->columnArray('favorite_days', 'varchar', null, 255),
                 'birthday' => $this->columnArray('birthday', 'date'),
-                'volume' => $this->columnArray('volume', 'int', null, 11),
+                'volume' => $this->columnArray('volume', 'int', null, $has_int_widths ? 11 : null),
                 'favorite_month' => $this->columnArray('favorite_month', 'varchar', null, 255),
                 'phone_number' => $this->columnArray('phone_number', 'varchar', null, 255),
                 'time' => $this->columnArray('time', 'varchar', null, 255),
@@ -281,6 +284,13 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             'week_year' => $this->columnArray('week_year', 'string', 40),
             'story' => $this->columnArray('story', 'text'),
         ];
+    }
+
+    protected function mysqlReportsIntegerDisplayWidths(): bool
+    {
+        $version = DB::connection()->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
+
+        return stripos($version, 'mariadb') !== false || version_compare($version, '8.0.19', '<');
     }
 
     protected function columnArray($name, $type='string', $default=null, $length=null, $values=null)
