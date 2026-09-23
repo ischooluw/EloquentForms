@@ -369,11 +369,11 @@ trait FormTrait
             return $this->columns;
         }
 
-        // If we have a MySQL Driver, then query directly to get Enum option values
-        if (DB::connection()->getDriverName() == 'mysql') {
+        // MySQL and MariaDB (a separate driver since Laravel 11) support SHOW COLUMNS, which gives Enum option values
+        if (in_array(DB::connection($this->connection)->getDriverName(), ['mysql', 'mariadb'])) {
             $this->setColumnsFromMySQL();
         }
-        // Otherwise query through Doctrine so we can get something still.
+        // Otherwise use Laravel's schema introspection so we can get something still.
         else {
             $this->setColumnsFromOther();
         }
@@ -382,24 +382,34 @@ trait FormTrait
     }
 
     /**
-     * Set columns using data we can get through Doctrine.
+     * Set columns using Laravel's driver-agnostic schema introspection.
      */
     private function setColumnsFromOther(): void
     {
-        $columns = DB::connection()->getSchemaBuilder()->getColumnListing($this->table);
+        $columns = DB::connection($this->connection)->getSchemaBuilder()->getColumns($this->getTable());
 
-        foreach ($columns as $column_name) {
-            $DoctrineColumn = DB::connection()->getDoctrineColumn($this->getTable(), $column_name);
-
-            $this->columns[$column_name] = [
-                'name' => $column_name,
-                'type' => $DoctrineColumn->getType()->getName(),
-                'default' => $DoctrineColumn->getDefault(),
-                'length' => $DoctrineColumn->getLength(),
+        foreach ($columns as $column) {
+            $this->columns[$column['name']] = [
+                'name' => $column['name'],
+                'type' => $this->getSQLType(strtolower($column['type'])),
+                'default' => $this->unquoteColumnDefault($column['default']),
+                'length' => $this->getSQLLength(strtolower($column['type'])),
                 'values' => null,
             ];
-            $this->valid_columns[$column_name] = $column_name;
+            $this->valid_columns[$column['name']] = $column['name'];
         }
+    }
+
+    /**
+     * Schema::getColumns() returns defaults as SQL expressions ('foo'), so unwrap string literals.
+     */
+    private function unquoteColumnDefault(?string $default): ?string
+    {
+        if ($default !== null && preg_match("/^'(.*)'$/s", $default, $matches)) {
+            return str_replace("''", "'", $matches[1]);
+        }
+
+        return $default;
     }
 
     /**

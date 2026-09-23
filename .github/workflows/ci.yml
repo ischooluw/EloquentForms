@@ -20,6 +20,14 @@ jobs:
         ports:
           - 33306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+          MARIADB_DATABASE: forge
+        ports:
+          - 33307:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
 
     strategy:
       fail-fast: true
@@ -84,6 +92,18 @@ jobs:
           DB_CONNECTION: testing
           DB_HOST: 127.0.0.1
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_USERNAME: root
+          DB_PASSWORD: ""
+          DB_DATABASE: forge
+
+      # Laravel 11+ has a separate mariadb driver; run against a real MariaDB server with it
+      - name: Execute tests (MariaDB)
+        run: vendor/bin/phpunit
+        env:
+          DB_CONNECTION: testing
+          DB_DRIVER: mariadb
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.mariadb.ports[3306] }}
           DB_USERNAME: root
           DB_PASSWORD: ""
           DB_DATABASE: forge

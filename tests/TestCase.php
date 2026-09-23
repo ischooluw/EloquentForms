@@ -27,7 +27,8 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         // SQL
         $app['config']->set('database.default', env('DB_CONNECTION'));
         $app['config']->set('database.connections.'.env('DB_CONNECTION'), [
-            'driver'   => 'mysql',
+            // mysql or mariadb; Laravel 11+ treats MariaDB as a separate driver
+            'driver'   => env('DB_DRIVER', 'mysql'),
             'host'      => env('DB_HOST', 'localhost'),
             'port'      => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'forge'),
